@@ -38,7 +38,7 @@ function clientside_validation_jquery_update_8003() {
  */
 function clientside_validation_jquery_update_8002() {
   // Prepare the new config path.
-  $config_path = drupal_get_path('module', 'clientside_validation_jquery') . '/config/install/clientside_validation_jquery.settings.yml';
+  $config_path = \Drupal::service('extension.list.module')->getPath('clientside_validation_jquery') . '/config/install/clientside_validation_jquery.settings.yml';
 
   // Parse the yaml and get data from config file.
   $config_yaml = Yaml::parse(file_get_contents($config_path));
@@ -72,7 +72,7 @@ function clientside_validation_jquery_requirements($phase) {
       return $requirements;
     }
 
-    $library_exists = file_exists('libraries/jquery-validation/dist/jquery.validate.js');
+    $library_exists = file_exists('libraries/jquery-validation/dist/jquery.validate.min.js');
 
     $requirements['clientside_validation_jquery_library'] = [
       'title' => t('Clientside Validation jQuery library'),

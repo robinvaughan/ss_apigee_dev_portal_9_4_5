@@ -15,7 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
  *     "attributes" = {"pattern"}
  *   },
  *   attachments = {
- *     "library" = {"clientside_validation_jquery/jquery.validate.additional"}
+ *     "library" = {"clientside_validation_jquery/cv.pattern.method"}
  *   }
  * )
  */

@@ -2,7 +2,7 @@
  * @file
  * Attaches behaviors for the Clientside Validation jQuery module.
  */
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal, once, drupalSettings) {
   'use strict';
 
   if (typeof drupalSettings.cvJqueryValidateOptions === 'undefined') {
@@ -18,10 +18,6 @@
 
   // Add messages with translations from backend.
   $.extend($.validator.messages, drupalSettings.clientside_validation_jquery.messages);
-
-  // Allow all modules to update the validate options.
-  // Example of how to do this is shown below.
-  $(document).trigger('cv-jquery-validate-options-update', drupalSettings.cvJqueryValidateOptions);
 
   /**
    * Attaches jQuery validate behavior to forms.
@@ -46,7 +42,7 @@
 
           Drupal.Ajax.prototype.beforeSubmitCVOriginal = Drupal.Ajax.prototype.beforeSubmit;
           Drupal.Ajax.prototype.beforeSubmit = function (form_values, element_settings, options) {
-            if (typeof this.$form !== 'undefined' && (validateAll === 1 || $(this.element).hasClass('cv-validate-before-ajax'))) {
+            if (typeof this.$form !== 'undefined' && (validateAll === 1 || $(this.element).hasClass('cv-validate-before-ajax')) && $(this.element).attr("formnovalidate") == undefined) {
               $(this.$form).removeClass('ajax-submit-prevented');
 
               $(this.$form).validate();
@@ -62,9 +58,15 @@
         }
       }
 
-      $(context).find('form').once('cvJqueryValidate').each(function() {
-        $(this).validate(drupalSettings.cvJqueryValidateOptions);
+      // Allow all modules to update the validate options.
+      // Example of how to do this is shown below.
+      $(document).trigger('cv-jquery-validate-options-update', drupalSettings.cvJqueryValidateOptions);
+
+      // Process for all the forms on the page everytime,
+      // we already use once so we should be good.
+      once('cvJqueryValidate', 'body form').forEach(function(element) {
+        $(element).validate(drupalSettings.cvJqueryValidateOptions);
       });
     }
   };
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, once, drupalSettings);

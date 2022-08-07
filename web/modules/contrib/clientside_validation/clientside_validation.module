@@ -62,21 +62,16 @@ function clientside_validation_add_validation(&$element, FormStateInterface &$fo
 /**
  * Check whether or not an element should be validated.
  */
-function clientside_validation_should_validate($element, FormStateInterface &$form_state, $form_id) {
-  $hook = 'clientside_validation_should_validate';
-  $hook_args = [$element, $form_state, $form_id];
-
-  /** @var \Drupal\Core\Extension\ModuleHandlerInterface $module_handler */
+function clientside_validation_should_validate($element, FormStateInterface $form_state, $form_id) {
   $module_handler = \Drupal::moduleHandler();
 
-  $implementations = $module_handler->getImplementations($hook);
+  $should_validate = TRUE;
 
-  foreach ($implementations as $implementation) {
-    if ($module_handler->invoke($implementation, $hook, $hook_args) === FALSE) {
-      // Don't validate even if any one implementation returns false.
-      return FALSE;
+  $module_handler->invokeAllWith('clientside_validation_should_validate', function(callable $hook, string $module) use (&$should_validate, $element, $form_state, $form_id) {
+    if ($should_validate && !$hook($element, $form_state, $form_id) === FALSE) {
+      $should_validate = FALSE;
     }
-  }
+  });
 
-  return TRUE;
+  return $should_validate;
 }

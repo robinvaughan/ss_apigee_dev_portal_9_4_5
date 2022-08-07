@@ -2,10 +2,10 @@
  * @file
  * Attaches behaviors for the Clientside Validation jQuery module.
  */
-(function ($) {
+(function ($, once) {
   // Override clientside validation jquery validation options.
   // We do this to display the error markup same as in inline_form_errors.
-  $(document).once('cvjquery').on('cv-jquery-validate-options-update', function (event, options) {
+  once('cvjquery', 'document').forEach(element => element.on('cv-jquery-validate-options-update', function (event, options) {
     options.errorElement = 'strong';
     options.showErrors = function(errorMap, errorList) {
       // First remove all errors.
@@ -19,9 +19,9 @@
       // Wrap all errors with div.form-item--error-message.
       $(this.currentForm).find('strong.error').each(function () {
         if (!$(this).parent().hasClass('form-item--error-message')) {
-          $(this).wrap('<div class="form-item--error-message"/>');
+          $(this).wrap('<div class="form-item--error-message" role="alert"/>');
         }
       });
     };
-  });
-})(jQuery);
+  }));
+})(jQuery, once);
